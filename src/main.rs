@@ -19,6 +19,7 @@ struct Cli {
     file: Option<String>,
 }
 
+// if no file is provided, download the default alarm sound = Pybites podcast intro
 const DEFAULT_ALARM_URL: &str = "https://bites-data.s3.us-east-2.amazonaws.com/ny_vibes.mp3";
 
 fn main() {
