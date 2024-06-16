@@ -1,10 +1,11 @@
 [package]
 name = "cli-alarm"
+description = "A simple CLI alarm clock (should help programmers stand up and stretch more)"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-clap = { version = "4.1", features = ["derive"] }
-rodio = "0.15"
-reqwest = { version = "0.11", features = ["blocking", "json"] }
+clap = { version = "4", features = ["derive", "env"] }
+rodio = "0.18"
+reqwest = { version = "0.12", features = ["blocking", "json"] }
 chrono = "0.4"
