@@ -59,4 +59,5 @@ $ export ALARM_FILE=/path/to/sound/file
 
 ## Ideas for improvement
 
-- [ ] Play an configurable audio message so you know what the alarm is for
+- [ ] Store the default sound file in a more accessible location like `~/.config/cli-alarm/alarm.mp3` or similar.
+- [ ] Play an configurable audio message so you know what the alarm is for.
