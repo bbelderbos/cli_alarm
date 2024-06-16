@@ -36,21 +36,20 @@ fn main() {
     };
 
     let minutes = args.minutes;
-    let initial_wait_duration = Duration::from_secs(minutes * 60);
-
-    println!("Alarm set to go off in {} minutes.", minutes);
-
-    // Wait for the initial duration
-    thread::sleep(initial_wait_duration);
-    play_alarm(&audio_file);
+    let interval_duration = Duration::from_secs(minutes * 60);
 
     if args.repeat {
-        let interval_duration = Duration::from_secs(minutes * 60);
         println!("Recurring alarm set for every {} minutes.", minutes);
+    } else {
+        println!("Alarm set to go off in {} minutes.", minutes);
+    }
 
-        loop {
-            thread::sleep(interval_duration);
-            play_alarm(&audio_file);
+    loop {
+        thread::sleep(interval_duration);
+        play_alarm(&audio_file);
+
+        if !args.repeat {
+            break;
         }
     }
 }
