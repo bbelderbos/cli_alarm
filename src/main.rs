@@ -28,9 +28,20 @@ fn main() {
     let audio_file = match &args.file {
         Some(file) => file.clone(),
         None => {
-            let default_file = "alarm.mp3";
-            if !Path::new(default_file).exists() {
-                download_default_alarm(default_file);
+            if cfg!(target_os = "windows") {
+                println!("You're on Windows, not sure if you have a ~/.config dir, please provide a file with -f");
+                std::process::exit(1);
+            }
+
+            let target_dir = format!("{}/.config/alarm-cli", std::env::var("HOME").unwrap());
+            if !Path::new(&target_dir).exists() {
+                println!("Creating directory {}", target_dir);
+                std::fs::create_dir(&target_dir).unwrap();
+            }
+            let default_file = format!("{}/alarm.mp3", target_dir);
+            if !Path::new(&default_file).exists() {
+                println!("No alarm file provided, downloading default alarm sound...");
+                download_default_alarm(&default_file);
             }
             default_file.to_string()
         }
