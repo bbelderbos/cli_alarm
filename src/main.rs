@@ -3,6 +3,9 @@ use std::thread;
 use std::time::Duration;
 use clap::{Parser, ArgGroup};
 
+const TIMES_TO_PLAY: usize = 3;
+const DEFAULT_MESSAGE: &str = "You set an alarm, time is up!";
+
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 #[command(group = ArgGroup::new("time").args(&["seconds", "minutes"]).required(true))]
@@ -20,8 +23,12 @@ struct Cli {
     repeat: bool,
 
     /// Message to speak instead of playing an audio file
-    #[arg(short = 'M', long, required = true, default_value = "hi, I am your alarm")]
+    #[arg(short = 'M', long, required = true, default_value = DEFAULT_MESSAGE)]
     message: String,
+
+    /// Times to play the alarm sound
+    #[arg(short, long, default_value_t = TIMES_TO_PLAY)]
+    times: usize,
 }
 
 pub fn humanize_duration(duration: Duration) -> String {
@@ -40,7 +47,6 @@ pub fn humanize_duration(duration: Duration) -> String {
 }
 
 pub fn speak_message(message: &str) -> Result<(), Box<dyn std::error::Error>> {
-    println!("Speaking message: {}", message);
     if cfg!(target_os = "macos") {
         Command::new("say")
             .arg(message)
@@ -84,7 +90,11 @@ fn main() {
 
     loop {
         thread::sleep(interval_duration);
-        speak_message(&args.message).unwrap();
+
+        for _ in 0..args.times {
+            speak_message(&args.message).unwrap();
+        }
+
         if !args.repeat {
             break;
         }
