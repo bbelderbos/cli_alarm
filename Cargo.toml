@@ -1,13 +1,12 @@
 [package]
 name = "cli-alarm"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
-description = "A simple CLI alarm clock (should help programmers stand up and stretch more)"
+description = "A simple CLI alarm saying a message after a certain amount of time."
 license = "MIT"
 
 [dependencies]
 clap = { version = "4", features = ["derive", "env"] }
-tts = "0.26.1"
 
 [[bin]]
 name = "alarm"
