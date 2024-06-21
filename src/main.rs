@@ -1,8 +1,7 @@
+use std::process::Command;
 use std::thread;
-use clap::Parser;
-use clap::ArgGroup;
 use std::time::Duration;
-use tts::Tts;
+use clap::{Parser, ArgGroup};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -25,9 +24,42 @@ struct Cli {
     message: String,
 }
 
+pub fn humanize_duration(duration: Duration) -> String {
+    let secs = duration.as_secs();
+    if secs < 60 {
+        format!("{} second{}", secs, if secs == 1 { "" } else { "s" })
+    } else {
+        let mins = secs / 60;
+        let remaining_secs = secs % 60;
+        if remaining_secs > 0 {
+            format!("{} minute{} and {} second{}", mins, if mins == 1 { "" } else { "s" }, remaining_secs, if remaining_secs == 1 { "" } else { "s" })
+        } else {
+            format!("{} minute{}", mins, if mins == 1 { "" } else { "s" })
+        }
+    }
+}
+
 pub fn speak_message(message: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let mut tts = Tts::default()?;
-    tts.speak(message, false)?;
+    println!("Speaking message: {}", message);
+    if cfg!(target_os = "macos") {
+        Command::new("say")
+            .arg(message)
+            .output()
+            .expect("Failed to execute say command on macOS");
+    } else if cfg!(target_os = "windows") {
+        Command::new("powershell")
+            .arg("-Command")
+            .arg(&format!("Add-Type –TypeDefinition \"using System.Speech; var synth = new Speech.Synthesis.SpeechSynthesizer(); synth.Speak('{}');\"", message))
+            .output()
+            .expect("Failed to execute PowerShell TTS on Windows");
+    } else if cfg!(target_os = "linux") {
+        Command::new("espeak")
+            .arg(message)
+            .output()
+            .expect("Failed to execute espeak on Linux");
+    } else {
+        eprintln!("Unsupported operating system for TTS");
+    }
     Ok(())
 }
 
@@ -42,10 +74,12 @@ fn main() {
         unreachable!("One of `seconds` or `minutes` must be provided")
     };
 
+    let humanized_duration = humanize_duration(interval_duration);
+
     if args.repeat {
-        println!("Recurring alarm set.");
+        println!("Recurring alarm set to play every {}.", humanized_duration);
     } else {
-        println!("Alarm set.");
+        println!("Alarm set to play after {}.", humanized_duration);
     }
 
     loop {
