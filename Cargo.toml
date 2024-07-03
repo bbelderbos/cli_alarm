@@ -1,6 +1,6 @@
 [package]
 name = "cli-alarm"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 description = "A simple CLI alarm saying a message after a certain amount of time."
 license = "MIT"

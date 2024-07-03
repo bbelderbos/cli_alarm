@@ -10,54 +10,33 @@ cargo install cli-alarm
 ## Usage
 
 ```bash
-$ alarm
-A simple CLI alarm clock (should help programmers stand up and stretch more)
+A simple CLI alarm saying a message after a certain amount of time.
 
-Usage: cli-alarm [OPTIONS] --minutes <MINUTES>
+Usage: alarm [OPTIONS] --message <MESSAGE> <--seconds <SECONDS>|--minutes <MINUTES>>
 
 Options:
-  -m, --minutes <MINUTES>
-  -r, --repeat
-  -f, --file <FILE>        [env: ALARM_FILE=]
+  -s, --seconds <SECONDS>  Number of seconds to wait before playing the alarm
+  -m, --minutes <MINUTES>  Number of minutes to wait before playing the alarm
+  -r, --repeat             Repeat the alarm
+  -M, --message <MESSAGE>  Message to speak instead of playing an audio file [default: "You set an alarm, time is up!"]
+  -t, --times <TIMES>      Times to play the alarm sound [default: 3]
   -h, --help               Print help
   -V, --version            Print version
 ```
 
-## Example
-
-```bash
-$ alarm -m 1
-Alarm set to go off in 1 minutes.
-...
-plays sound once after 1 minute
-...
-
-$ alarm -m 1 -r
-Recurring alarm set for every 1 minutes.
-...
-plays sound every minute
-...
-```
-
 ## Run in background
 
-Not built-in to the tool, but on Unix systems you can run it in the background like this:
+To run it permanently in the background I added this to my .zhrc file:
 
 ```bash
-$ alarm -m 1 -r &
+function run_alarm_if_not_running {
+    if ! pgrep -f "alarm -m 60 -M" > /dev/null; then
+        alarm -m 60 -M "go walk" -t 2 -r &
+    fi
+}
+run_alarm_if_not_running
 ```
 
-## Change the sound file
+When opening a new terminal it checks if the alarm is running, if not it starts it.
 
-By default, the alarm sound is the one that comes with the utility (NY vibes from the Pybites podcast). You can change it by providing a path to a sound file or set an environment variable:
-
-```bash
-$ alarm -m 1 -f /path/to/sound/file
-# or:
-$ export ALARM_FILE=/path/to/sound/file
-```
-
-## Ideas for improvement
-
-- [ ] Store the default sound file in a more accessible location like `~/.config/cli-alarm/alarm.mp3` or similar.
-- [ ] Play an configurable audio message so you know what the alarm is for.
+This particular invocation will say "go walk" two times every hour, a good reminder to get up and stretch!
