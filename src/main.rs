@@ -1,7 +1,7 @@
+use clap::{ArgGroup, Parser};
 use std::process::Command;
 use std::thread;
 use std::time::Duration;
-use clap::{Parser, ArgGroup};
 
 const TIMES_TO_PLAY: usize = 3;
 const DEFAULT_MESSAGE: &str = "You set an alarm, time is up!";
@@ -39,7 +39,13 @@ pub fn humanize_duration(duration: Duration) -> String {
         let mins = secs / 60;
         let remaining_secs = secs % 60;
         if remaining_secs > 0 {
-            format!("{} minute{} and {} second{}", mins, if mins == 1 { "" } else { "s" }, remaining_secs, if remaining_secs == 1 { "" } else { "s" })
+            format!(
+                "{} minute{} and {} second{}",
+                mins,
+                if mins == 1 { "" } else { "s" },
+                remaining_secs,
+                if remaining_secs == 1 { "" } else { "s" }
+            )
         } else {
             format!("{} minute{}", mins, if mins == 1 { "" } else { "s" })
         }
