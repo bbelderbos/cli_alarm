@@ -106,3 +106,52 @@ fn main() {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::Duration;
+
+    #[test]
+    fn test_short_durations() {
+        assert_eq!(humanize_duration(Duration::from_secs(0)), "0 seconds");
+        assert_eq!(humanize_duration(Duration::from_secs(1)), "1 second");
+        assert_eq!(humanize_duration(Duration::from_secs(30)), "30 seconds");
+    }
+
+    #[test]
+    fn test_exact_minute_durations() {
+        assert_eq!(humanize_duration(Duration::from_secs(60)), "1 minute");
+        assert_eq!(humanize_duration(Duration::from_secs(180)), "3 minutes");
+        assert_eq!(humanize_duration(Duration::from_secs(3600)), "60 minutes");
+    }
+
+    #[test]
+    fn test_minute_and_second_durations() {
+        assert_eq!(
+            humanize_duration(Duration::from_secs(61)),
+            "1 minute and 1 second"
+        );
+        assert_eq!(
+            humanize_duration(Duration::from_secs(122)),
+            "2 minutes and 2 seconds"
+        );
+        assert_eq!(
+            humanize_duration(Duration::from_secs(333)),
+            "5 minutes and 33 seconds"
+        );
+    }
+
+    #[test]
+    fn test_edge_cases() {
+        assert_eq!(humanize_duration(Duration::from_secs(59)), "59 seconds");
+        assert_eq!(
+            humanize_duration(Duration::from_secs(119)),
+            "1 minute and 59 seconds"
+        );
+        assert_eq!(
+            humanize_duration(Duration::from_secs(3599)),
+            "59 minutes and 59 seconds"
+        );
+    }
+}
